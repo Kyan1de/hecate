@@ -8,15 +8,16 @@
 #include<stdlib.h>
 
 typedef struct _vtable vtable;
+typedef enum _funcidx funcidx;
 
 // standard fuction positions
-enum funcidx {
+enum _funcidx {
     SpeakFunc,
     SayFunc,
 };
 
 struct _vtable {
-    enum funcidx *defined; // (pointer to) array of defined functions, zero terminated.
+    funcidx *defined; // (pointer to) array of defined functions, zero terminated.
     void (*funcarr[])(); // <- should have size of `elements` * sizeof(void(*)()) (function pointers)
 };
 
@@ -56,11 +57,11 @@ void dog_init(dog* self);
 void cat_init(cat* self);
 
 // todo: make checked and unchecked forms of each interfacing function  
-static enum funcidx object_defined[] = {SpeakFunc,SayFunc,0};
+static funcidx object_defined[] = {SpeakFunc,SayFunc,0};
 static const vtable object_vtable = {.defined = object_defined, .funcarr = {[SpeakFunc] = (void*)object_speak, [SayFunc] = (void*)object_say}};
-static enum funcidx dog_defined[] = {SpeakFunc,SayFunc,0};
+static funcidx dog_defined[] = {SpeakFunc,SayFunc,0};
 static const vtable dog_vtable = {.defined = dog_defined, .funcarr = {[SpeakFunc] = (void*)dog_speak, [SayFunc] = (void*)dog_say}};
-static enum funcidx cat_defined[] = {SpeakFunc,SayFunc,0};
+static funcidx cat_defined[] = {SpeakFunc,SayFunc,0};
 static const vtable cat_vtable = {.defined = cat_defined, .funcarr = {[SpeakFunc] = (void*)cat_speak, [SayFunc] = (void*)cat_say}};
 
 void object_init(object* self) {*self = (object){.functions = &object_vtable};}
