@@ -16,7 +16,7 @@ enum funcidx {
 };
 
 struct _vtable {
-    uint16_t elements; // technically limits you, but like. 65,535 functions should be enough for every class
+    enum funcidx *defined; // (pointer to) array of defined functions, zero terminated.
     void (*funcarr[])(); // <- should have size of `elements` * sizeof(void(*)()) (function pointers)
 };
 
@@ -55,9 +55,13 @@ void object_init(object* self);
 void dog_init(dog* self);
 void cat_init(cat* self);
 
-static const vtable object_vtable = {.elements = 1, .funcarr = {[SpeakFunc] = (void*)object_speak, [SayFunc] = (void*)object_say}};
-static const vtable dog_vtable = {.elements = 1, .funcarr = {[SpeakFunc] = (void*)dog_speak, [SayFunc] = (void*)dog_say}};
-static const vtable cat_vtable = {.elements = 1, .funcarr = {[SpeakFunc] = (void*)cat_speak, [SayFunc] = (void*)cat_say}};
+// todo: make checked and unchecked forms of each interfacing function  
+static enum funcidx object_defined[] = {SpeakFunc,SayFunc,0};
+static const vtable object_vtable = {.defined = object_defined, .funcarr = {[SpeakFunc] = (void*)object_speak, [SayFunc] = (void*)object_say}};
+static enum funcidx dog_defined[] = {SpeakFunc,SayFunc,0};
+static const vtable dog_vtable = {.defined = dog_defined, .funcarr = {[SpeakFunc] = (void*)dog_speak, [SayFunc] = (void*)dog_say}};
+static enum funcidx cat_defined[] = {SpeakFunc,SayFunc,0};
+static const vtable cat_vtable = {.defined = cat_defined, .funcarr = {[SpeakFunc] = (void*)cat_speak, [SayFunc] = (void*)cat_say}};
 
 void object_init(object* self) {*self = (object){.functions = &object_vtable};}
 void dog_init(dog* self) {*self = (dog){.super = (object){.functions = &dog_vtable}};}
