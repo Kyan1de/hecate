@@ -18,7 +18,7 @@ enum _funcidx {
 
 struct _vtable {
     funcidx *defined; // (pointer to) array of defined functions, zero terminated.
-    void (*funcarr[])(); // <- should have size of `elements` * sizeof(void(*)()) (function pointers)
+    void (*funcarr[])(); // <- should have size of k * sizeof(void(*)()) (function pointers) where k is the highest implemented function index
 };
 
 /*
