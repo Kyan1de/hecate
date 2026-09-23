@@ -31,7 +31,7 @@ typedef struct _object {
 
 
 void (*fetch(void* obj, funcidx func))();
-inline void (*fetch_unchecked(object* obj, funcidx func))();
+inline void (*fetch_unchecked(void* obj, funcidx func))();
 
 #ifdef HEC_IMPL
 
@@ -49,7 +49,7 @@ void (*fetch(void* obj, funcidx func))() {
     }
 }
 
-inline void (*fetch_unchecked(object* obj, funcidx func))() {
+inline void (*fetch_unchecked(void* obj, funcidx func))() {
     return (*(vtable**)obj)->funcarr[func];
 }
 
