@@ -6,14 +6,16 @@
 #include<stdint.h>
 #include<stdio.h>
 #include<stdlib.h>
+#include<stdarg.h>
 
 typedef struct _vtable vtable;
 typedef enum _funcidx funcidx;
 
 // standard fuction positions
 enum _funcidx {
-    SpeakFunc,
+    SpeakFunc = 1,
     SayFunc,
+    VariadicFunc,
 };
 
 struct _vtable {
@@ -51,6 +53,14 @@ void object_say(const char* str) {printf("%s\n", str);};
 void cat_say(const char* str) {printf("the cat says \"%s\"\n", str);};
 void dog_say(const char* str) {printf("the dog says \"%s\"\n", str);};
 
+void dog_VA(int n, ...) {
+    va_list args;
+    va_start(args, n);
+    for (int i = 0; i < n; i++)
+        printf("%d ", va_arg(args, int));
+    printf("\n");
+    va_end(args);
+}
 
 void object_init(object* self);
 void dog_init(dog* self);
@@ -59,8 +69,8 @@ void cat_init(cat* self);
 // todo: make checked and unchecked forms of each interfacing function  
 static funcidx object_defined[] = {SpeakFunc,SayFunc,0};
 static const vtable object_vtable = {.defined = object_defined, .funcarr = {[SpeakFunc] = (void*)object_speak, [SayFunc] = (void*)object_say}};
-static funcidx dog_defined[] = {SpeakFunc,SayFunc,0};
-static const vtable dog_vtable = {.defined = dog_defined, .funcarr = {[SpeakFunc] = (void*)dog_speak, [SayFunc] = (void*)dog_say}};
+static funcidx dog_defined[] = {SpeakFunc,SayFunc, VariadicFunc, 0};
+static const vtable dog_vtable = {.defined = dog_defined, .funcarr = {[VariadicFunc] = (void*)dog_VA,[SpeakFunc] = (void*)dog_speak, [SayFunc] = (void*)dog_say}};
 static funcidx cat_defined[] = {SpeakFunc,SayFunc,0};
 static const vtable cat_vtable = {.defined = cat_defined, .funcarr = {[SpeakFunc] = (void*)cat_speak, [SayFunc] = (void*)cat_say}};
 
@@ -86,18 +96,25 @@ cat* new_cat() {
     return ret;
 }
 
-void speak(void* object) {
-    (*(vtable**)object)->funcarr[SpeakFunc]();
+// hate this syntax. Bad. why is the argument on the inside. gross. hate it.
+void (*fetch(void* obj, funcidx func))() {
+    int defined = 0;
+    for (int ii = 0; (*(vtable**)obj)->defined[ii]!=0;ii++) if ((*(vtable**)obj)->defined[ii]==func) defined = 1;
+    if (defined) {
+        void (*f)() = (*(vtable**)obj)->funcarr[func];
+        return f;
+    }
+    else {
+        fprintf(stderr, "Called undedfined function on object\n");
+        exit(-1);
+    }
 }
 
-void say(void* object, const char* input) {
-    void(*f)(const char *);
-    f = (void(*)(const char *))(*(vtable**)object)->funcarr[SayFunc];
-    f(input);
+inline void (*fetch_unchecked(object* obj, funcidx func))() {
+    return (*(vtable**)obj)->funcarr[func];
 }
 
 int main(void) {
-    
     object a;
     dog b;
     cat c;
@@ -106,13 +123,10 @@ int main(void) {
     dog_init(&b);
     cat_init(&c);
 
-    speak(&a);
-    speak(&b);
-    speak(&c);
+    void (*f)(int, ...) = (void*)fetch(&b, VariadicFunc);
+    f(2, 1, 2);
 
-    say(&a, "Testing say");
-    say(&b, "woof woof");
-    say(&c, "mrreow");
+    // i dont even want to think about how id do variadics
 
     return 0;
 }
