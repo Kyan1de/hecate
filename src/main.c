@@ -1,11 +1,11 @@
 
-#define USER_FUNCTIONS SpeakFunc,SayFunc,VariadicFunc
-#define HEC_IMPL
-
 #include<stdint.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdarg.h>
+
+#define HEC_IMPL
+#define USER_FUNCTIONS SpeakFunc,SayFunc,VariadicFunc
 
 #include"hecate.h"
 
@@ -13,6 +13,10 @@
  * vtables are useful for dynamic/object oriented programming
  * for example:
  */
+
+VirtualFuncTypes(void(*SpeakFunc_t)(), void SpeakFunc_return_t);
+VirtualFuncTypes(void(*SayFunc_t)(const char*), void SayFunc_return_t);
+VirtualFuncTypes(void(*VariadicFunc_t)(int, ...), void VariadicFunc_return_t);
 
 typedef struct _dog {
 	object super;
@@ -68,10 +72,10 @@ int main(void) {
     dog_init(&a);
     cat_init(&b);
 
-    void (*f)(int, ...) = (void*)fetch(&a, VariadicFunc);
+    VariadicFunc_t f = (void*)fetch(&a, VariadicFunc);
     f(2, 1, 2);
 
-    void (*g)() = (void*)fetch(&b, SpeakFunc);
+    SpeakFunc_t g = (void*)fetch(&b, SpeakFunc);
     g();
 
     return 0;

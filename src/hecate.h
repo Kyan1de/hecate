@@ -3,14 +3,19 @@
 #include<stdlib.h>
 
 
+// this will just let you define the signature and return type in one line. 
+#define VirtualFuncTypes(signature_t, return_t) \
+    typedef signature_t;\
+    typedef return_t
 
-// fuction positions
 typedef enum _funcidx {
     no_func,
     #ifdef USER_FUNCTIONS
     USER_FUNCTIONS
     #endif
 } funcidx;
+
+VirtualFuncTypes(void(*no_func_t)(), void no_func_return_t);
 
 typedef struct _vtable {
     funcidx *defined; // (pointer to) array of defined functions, zero terminated.
@@ -27,7 +32,6 @@ typedef struct _object {
 
 void (*fetch(void* obj, funcidx func))();
 inline void (*fetch_unchecked(object* obj, funcidx func))();
-
 
 #ifdef HEC_IMPL
 
