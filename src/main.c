@@ -1,7 +1,6 @@
 
 #include<stdint.h>
 #include<stdio.h>
-#include<stdlib.h>
 #include<stdarg.h>
 
 #define HEC_IMPL
@@ -42,9 +41,6 @@ void dog_VA(int n, ...) {
     va_end(args);
 }
 
-void dog_init(dog* self);
-void cat_init(cat* self);
-
 static funcidx dog_defined[] = {SpeakFunc,SayFunc, VariadicFunc, 0};
 static const vtable dog_vtable = {.defined = dog_defined, .funcarr = {[VariadicFunc] = (void*)dog_VA,[SpeakFunc] = (void*)dog_speak, [SayFunc] = (void*)dog_say}};
 static funcidx cat_defined[] = {SpeakFunc,SayFunc,0};
@@ -52,18 +48,6 @@ static const vtable cat_vtable = {.defined = cat_defined, .funcarr = {[SpeakFunc
 
 void dog_init(dog* self) {*self = (dog){.super = (object){.functions = &dog_vtable}};}
 void cat_init(cat* self) {*self = (cat){.super = (object){.functions = &cat_vtable}};}
-
-dog* new_dog() {
-    dog* ret = malloc(sizeof(dog));
-    *ret = (dog){.super = {.functions = &dog_vtable}};
-    return ret;
-}
-
-cat* new_cat() {
-    cat* ret = malloc(sizeof(cat));
-    *ret = (cat){.super = {.functions = &cat_vtable}};
-    return ret;
-}
 
 int main(void) {
     dog a;
