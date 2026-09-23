@@ -8,6 +8,7 @@ SHELL = /bin/sh
 
 all: main
 
+.PHONY: main
 main: $(srcdir)/main.c
 	gcc -Wall -Wextra $(srcdir)/main.c -o main -ggdb
 
