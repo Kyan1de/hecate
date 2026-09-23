@@ -126,7 +126,5 @@ int main(void) {
     void (*f)(int, ...) = (void*)fetch(&b, VariadicFunc);
     f(2, 1, 2);
 
-    // i dont even want to think about how id do variadics
-
     return 0;
 }
