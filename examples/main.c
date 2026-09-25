@@ -3,16 +3,13 @@
 #include<stdio.h>
 #include<stdarg.h>
 
+// these defines configure the hecate header. it may be worth having a dedicated header for everything other than HEC_IMPL, just so your vtables are consistent across sourced files
 #define HEC_IMPL
 #define USER_FUNCTIONS SpeakFunc,SayFunc,VariadicFunc
 
 #include"hecate.h"
 
-/*
- * vtables are useful for dynamic/object oriented programming
- * for example:
- */
-
+// same thing goes for the types related to your virtual functions
 VirtualFuncTypes(void(*SpeakFunc_t)(), void SpeakFunc_return_t);
 VirtualFuncTypes(void(*SayFunc_t)(const char*), void SayFunc_return_t);
 VirtualFuncTypes(void(*VariadicFunc_t)(int, ...), void VariadicFunc_return_t);
@@ -26,6 +23,7 @@ typedef struct _cat {
 } cat;
 
 
+// define the functions referenced by the vtables. these can be referenced directly as well, but dont actually need to be made available to everywheree you call them thanks to vtables
 void dog_speak(void) {printf("woof!\n");};
 void cat_speak(void) {printf("meow\n");};
 
@@ -36,7 +34,7 @@ void dog_VA(int n, ...) {
     va_list args;
     va_start(args, n);
     for (int i = 0; i < n; i++)
-        printf("%d ", va_arg(args, int));
+        printf("woof (%d) ", va_arg(args, int));
     printf("\n");
     va_end(args);
 }

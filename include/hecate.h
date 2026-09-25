@@ -38,7 +38,8 @@ inline void (*fetch_unchecked(void* obj, funcidx func))();
 // hate this syntax. Bad. why is the argument on the inside. gross. hate it.
 void (*fetch(void* obj, funcidx func))() {
     int defined = 0;
-    for (int ii = 0; (*(vtable**)obj)->defined[ii]!=no_func;ii++) if ((*(vtable**)obj)->defined[ii]==func) defined = 1;
+    for (int ii = 0; (*(vtable**)obj)->defined[ii]!=no_func;ii++) 
+        if ((*(vtable**)obj)->defined[ii]==func) defined = 1;
     if (defined) {
         void (*f)() = (*(vtable**)obj)->funcarr[func];
         return f;
